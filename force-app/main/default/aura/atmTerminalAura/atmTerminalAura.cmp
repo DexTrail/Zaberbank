@@ -1,0 +1,116 @@
+<aura:component
+        implements="flexipage:availableForAllPageTypes, force:appHostable"
+        controller="ATMTerminalController">
+
+    <!--Text fields data-->
+    <aura:attribute name="terminalText" type="String" default="Select an ATM"/>
+    <aura:attribute name="terminalTextSmall" type="String"/>
+    <aura:attribute name="userInput" type="Double"/>
+
+    <!--ATMs data-->
+    <aura:attribute name="atms" type="List" default="[]"/>
+    <aura:attribute name="selectedAtm" type="ATM__c"/>
+
+    <!--Cards data-->
+    <aura:attribute name="cards" type="List" default="[]"/>
+    <aura:attribute name="selectedCard" type="Card__c"/>
+    <aura:attribute name="requestPIN" type="Boolean"/>
+    
+    <!--Selected card currency data-->
+    <aura:attribute name="cardCurrencyName" type="String"/>
+    <aura:attribute name="cardCurrencyExrate" type="Double"/>
+
+    <!--Currencies data-->
+    <aura:attribute name="currencies" type="List" default="[]"/>
+    <aura:attribute name="selectedCurrency" type="Currency__c"/>
+
+    <!--Initialization-->
+    <aura:handler name="init" value="{! this }" action="{! c.initATMs }"/>
+    <aura:handler name="init" value="{! this }" action="{! c.initCards }"/>
+
+    <!--ATM selector-->
+    <p class="label">ATM</p>
+    <lightning:combobox name="atm-selector" class="control" placeholder="Select an ATM" aura:id="atm-selector"
+            options="{! v.atms }" value="{! v.selectedAtm }" onchange="{! c.handleATMChange }"/>
+
+    <!--Terminal display-->
+    <div class="display">
+        <p class="display-text-big">{! v.terminalText }</p>
+        <p class="display-text-small">{! empty(v.terminalTextSmall) ? '&nbsp;' : v.terminalTextSmall }</p>
+    </div>
+
+    <!--PIN block-->
+    <aura:if isTrue="{! v.requestPIN }">
+        <p class="label">PIN</p>
+        <lightning:layout horizontalAlign="center" class="control">
+            <!--PIN input-->
+            <lightning:layoutItem size = "4">
+                <span onkeydown="{! c.handlePINKeydown }">
+                    <lightning:input type="password" name="pin-field" placeholder="Input PIN code..."
+                            aura:id="pin-field" variant="label-hidden" id="pin-field"
+                            onchange="{! c.handlePINInput }"/>
+                </span>
+            </lightning:layoutItem>
+
+            <!--PIN OK button-->
+            <lightning:layoutItem size = "4" padding="around-small">
+                <lightning:button variant="success" label="Accept PIN code" title="OK"
+                        value="pinOK" onclick="{! c.handleButtonClick}"/>
+            </lightning:layoutItem>
+
+            <!--PIN Cancel button-->
+            <lightning:layoutItem size = "2" padding="around-small">
+                <lightning:button variant="destructive" label="Cancel" title="Cancel"
+                        value="pullout" onclick="{! c.handleButtonClick}"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </aura:if>
+
+    <!--Card selector-->
+    <p class="label">Card</p>
+    <lightning:combobox name="card-selector" class="control" placeholder="Select a card..."
+            aura:id="card-selector" options="{! v.cards }" value="{! v.selectedCard }"
+            onchange="{! c.handleCardChange }" disabled="{! empty(v.selectedAtm) || not(empty(v.selectedCard)) || v.requestPIN }"/>
+
+    <!--Amount input and currency selector-->
+    <p class="label">Amount</p>
+    <lightning:layout horizontalAlign="spread" class="control">
+        <!--Amount input-->
+        <lightning:layoutItem size="8">
+            <lightning:input name="input-field" placeholder="Input amount..."
+                    aura:id="input-field" value="{! v.userInput }" onchange="{! c.handleInputChange }"
+                    disabled="{! empty(v.selectedAtm) || empty(v.selectedCard) || empty(v.selectedCurrency) }"/>
+        </lightning:layoutItem>
+
+        <!--Currency selector-->
+        <lightning:layoutItem size="3">
+            <lightning:combobox name="currency-selector" options="{! v.currencies }" placeholder="Currency"
+                    aura:id="currency-selector" value="{! v.selectedCurrency }" onchange="{! c.handleCurrencyChange }"
+                    disabled="{! empty(v.selectedAtm) || empty(v.selectedCard) || v.requestPIN }"/>
+        </lightning:layoutItem>
+    </lightning:layout>
+
+    <!--Floor buttons-->
+    <lightning:layout horizontalAlign="center" class="control buttons-floor">
+        <!--Balance button-->
+        <lightning:layoutItem size = "4">
+            <lightning:button variant="brand" label="Balance" title="Balance"
+                    value="balance" onclick="{! c.handleButtonClick}"
+                    disabled="{! empty(v.selectedAtm) || empty(v.selectedCard) || v.requestPIN }"/>
+        </lightning:layoutItem>
+
+        <!--Withdraw button-->
+        <lightning:layoutItem size = "4">
+            <lightning:button variant="success" label="Withdraw" title="Withdraw money"
+                    value="withdraw" onclick="{! c.handleButtonClick}"
+                    disabled="{! empty(v.selectedAtm) || empty(v.selectedCard) || empty(v.selectedCurrency) || empty(v.userInput) }"/>
+        </lightning:layoutItem>
+
+        <!--Pull out button-->
+        <lightning:layoutItem size = "4">
+            <lightning:button variant="destructive" label="Pull out card" title="Pull out card"
+                    value="pullout" onclick="{! c.handleButtonClick}"
+                    disabled="{! empty(v.selectedAtm) || empty(v.selectedCard) || v.requestPIN }"/>
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

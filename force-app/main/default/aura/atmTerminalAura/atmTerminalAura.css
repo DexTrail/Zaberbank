@@ -1,0 +1,40 @@
+.THIS {
+    text-align: center;
+}
+
+.THIS.display {
+    padding: 8px;
+    background-color: lightblue;
+    border-radius: 0.5rem;
+    margin: 20px 10%;
+}
+
+.THIS .display-text-big {
+    font-size: 250%;
+}
+
+.THIS .display-text-small {
+    font-size: 150%;
+}
+
+.THIS.control {
+    margin: 0% 10%;
+}
+
+.THIS.label {
+    font-size: 150%;
+    font-weight: bold;
+    margin: 20px 10% 0px;
+}
+
+.THIS.logo {
+    align-self: center;
+}
+
+.THIS.buttons-floor {
+    margin: 20px 10% 0px;
+}
+
+.THIS #pin-field {
+    margin-top: 12px;
+}
